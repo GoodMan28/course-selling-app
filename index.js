@@ -56,8 +56,7 @@ app.post("/user-signin", async (req, res) => {
             "msg": "The username is not registered"
         })
     }
-    let 
-    let match = await bcrypt.compare(password, password)
+    let match = await bcrypt.compare(password, user.password);
 })
 
 app.post("/user-purchase", (req, res) => {
