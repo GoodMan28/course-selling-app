@@ -110,7 +110,7 @@ adminRouter.post("/course", auth, async (req, res) => {
 
     // now we will add the info of the course into the course collection
     try {
-        await CourseModel.create({
+        let course = await CourseModel.create({
             title: title,
             description: description,
             price: price,
@@ -118,7 +118,8 @@ adminRouter.post("/course", auth, async (req, res) => {
             adminId: objectAdminId
         })
         return res.json({
-            "msg": "The course is created sucessfully"
+            "msg": "The course is created sucessfully",
+            courseId: course._id
         })
     }
     catch(err) {
@@ -128,9 +129,43 @@ adminRouter.post("/course", auth, async (req, res) => {
     }
 })
 
-adminRouter.put("/course", (req, res) => {
-    res.json({
-        "msg": "The course updation EP"
+adminRouter.put("/course", auth , async (req, res) => {
+    let admin_Id = req.id;
+    let {title, description, price, imageUrl, courseId} = req.body;
+    // converting the admin_Id from string to the ObjectId
+    let objectAdminId;
+    try {
+        objectAdminId = new mongoose.Types.ObjectId(admin_Id);
+    }
+    catch(err) {
+        return res.status(404).json({
+            "msg": "Incorrect ID format of admin_Id"
+        })
+    }
+
+    // now we will be updating the course details on for the course of "courseId" and which is created by the admin "objectAdminId"
+    // since the admin can only edit the course mad by him/her
+
+    // THE updateOne takes two arguments: the filter on the basis of which we find the correct collection, and 
+    // the changes
+    let course = await CourseModel.updateOne({
+        _id: courseId,
+        adminId: objectAdminId
+    }, {
+        title: title,
+        description: description,
+        price: price,
+        imageUrl: imageUrl
+    })
+
+    if(!course) {
+        return res.status(404).json({
+            "msg": "The creator does not own this course"
+        })
+    }
+
+    return res.json({
+        "msg": "The course is updated"
     })
 })
 

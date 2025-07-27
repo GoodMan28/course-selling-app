@@ -12,22 +12,21 @@ userRouter.post("/signup", async (req, res) => {
     // making a schema for the required body using zod
     let requiredBody = z.object({
         email: z.string().min(3).max(100).email(),
-        password: z.string().min(3).max(100),
+        password: z.min(3).max(100),
         firstName: z.string().min(3).max(100),
         lastName: z.string().min(3).max(100)
     })
+
     let parsedWithSuccess = requiredBody.safeParse(req.body);
     if(!parsedWithSuccess) {
         return res.status(404).json({
-            "msg": "Incorrect format of the details"
+            "msg": "The input format is wrong"
         })
     }
 
-    // rest is the correct format 
-    let email = req.body.email;
-    let password = req.body.password;
-    let firstName = req.body.firstName;
-    let lastName = req.body.lastName;
+    // the input format is correct
+    let { email, password, firstName, lastName } = req.body;
+
 
     // hashing the password
     let hash = await bcrypt.hash(password, 5); // using 5 saltrounds we will hash the original password

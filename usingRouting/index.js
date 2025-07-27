@@ -1,9 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-// import 'dotenv/config'
-// s3.getBucketCors({Bucket: process.env.S3_BUCKET}, function(err, data) {})
-// importing the course and the user router from the routes folder
+import 'dotenv/config'
+
 import { userRouter } from "./routes/user.js";
 import { courseRouter } from "./routes/course.js";
 import { adminRouter } from "./routes/admin.js";
@@ -22,7 +21,7 @@ app.use("/api/v1/admin", adminRouter);
 async function main() {
   try {
     await mongoose.connect(
-      "mongodb+srv://admin:Abhineet%4028@cluster0.qxzy1e7.mongodb.net/coursera-app"
+      process.env.MONGO_URL
     );
     app.listen(3000);
     console.log("Listening on port 3000");
